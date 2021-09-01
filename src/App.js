@@ -1,27 +1,52 @@
-import { doc, getFirestore } from 'firebase/firestore';
-import { FirebaseAppProvider, FirestoreProvider, useFirestore, useFirebaseApp, useFirestoreDocData } from 'reactfire';
+import { doc, initializeFirestore } from 'firebase/firestore';
+// import { enableIndexedDbPersistence } from 'firebase/firestore';
+// import { getFirestore } from 'firebase/firestore';
+import { FirebaseAppProvider, FirestoreProvider, useInitFirestore, useFirestore, useFirestoreDocData } from 'reactfire';
 import { firebaseConfig } from './firebase';
 import './App.scss';
 
-function BurritoTaste() {
+const BurritoTaste = () => {
   const firestore = useFirestore();
   const burritoRef = doc(firestore, 'tryreactfire', 'burrito');
   const { status, data } = useFirestoreDocData(burritoRef);
 
   if (status === 'loading') {
-    return <p>Fetching burrito flavor...</p>;
+    return <span>loading...</span>;
   }
 
-  return <p>The burrito is {data.yummy ? 'good' : 'bad'}!</p>;
+  return (
+    <main>
+      <h1>🌯</h1>
+      <p>The burrito is {data.yummy ? 'good' : 'bad'}!</p>
+    </main>
+  );
 }
 
-function App() {
+const AppContent = () => {
+  const { status, data: firestoreInstance } = useInitFirestore(async (firebaseApp) => {
+    // const firestore = getFirestore(firebaseApp);
+    const firestore = initializeFirestore(firebaseApp, {});
+
+    // await enableIndexedDbPersistence(firestore);
+
+    return firestore;
+  });
+
+  if (status === 'loading') {
+    return <span>loading...</span>;
+  }
+
+  return (
+    <FirestoreProvider sdk={firestoreInstance}>
+      <BurritoTaste />
+    </FirestoreProvider>
+  )
+}
+
+const App = () => {
   return (
     <FirebaseAppProvider firebaseConfig={firebaseConfig}>
-      <FirestoreProvider sdk={getFirestore(useFirebaseApp())}>
-        <h1>🌯</h1>
-        <BurritoTaste />
-      </FirestoreProvider>
+      <AppContent />
     </FirebaseAppProvider>
   )
 }
