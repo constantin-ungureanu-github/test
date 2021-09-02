@@ -1,5 +1,5 @@
 import { doc, initializeFirestore } from 'firebase/firestore';
-// import { enableIndexedDbPersistence } from 'firebase/firestore';
+import { enableIndexedDbPersistence } from 'firebase/firestore';
 // import { getFirestore } from 'firebase/firestore';
 import { FirebaseAppProvider, FirestoreProvider, useInitFirestore, useFirestore, useFirestoreDocData } from 'reactfire';
 import { firebaseConfig } from './firebase';
@@ -27,7 +27,7 @@ const AppContent = () => {
     // const firestore = getFirestore(firebaseApp);
     const firestore = initializeFirestore(firebaseApp, {});
 
-    // await enableIndexedDbPersistence(firestore);
+    await enableIndexedDbPersistence(firestore);
 
     return firestore;
   });
